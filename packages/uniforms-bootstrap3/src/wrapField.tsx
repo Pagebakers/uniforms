@@ -22,11 +22,14 @@ export default function wrapField(
     required,
     showInlineError, // Show inline error message?
     wrapClassName, // Input wrapper class name.
+    prepend, // grouped input
+    append, // grouped input
     ...props
   },
   children,
 ) {
   const hasWrap = !!(grid || wrapClassName);
+  const isGroup = !!(prepend || append);
   const blockError = !!(error && showInlineError) && (
     <span className="help-block">{errorMessage}</span>
   );
@@ -36,6 +39,17 @@ export default function wrapField(
   const blockHelp = !!help && (
     <span className={classnames('help-block', helpClassName)}>{help}</span>
   );
+  
+  let input = children
+  if (isGroup) {
+    input = (
+      <div className="input-group">
+        {prepend && <div className="input-group-addon">{prepend}</div>}
+        {input}
+        {append && <div className="input-group-addon">{append}</div>}
+       </div>
+    )
+  }
 
   return (
     <div
@@ -68,19 +82,21 @@ export default function wrapField(
           {label}
         </label>
       )}
+      
+      
 
       {hasWrap && (
         <div
           className={classnames(wrapClassName, gridClassName(grid, 'input'))}
         >
-          {children}
+          {input}
           {blockFeedback}
           {blockHelp}
           {blockError}
         </div>
       )}
 
-      {!hasWrap && children}
+      {!hasWrap && input}
       {!hasWrap && blockFeedback}
       {!hasWrap && blockHelp}
       {!hasWrap && blockError}
